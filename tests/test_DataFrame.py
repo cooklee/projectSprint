@@ -146,11 +146,17 @@ class TestDataFrame(TestCase):
             for item_loc, item_to_check in zip(line_loc[1:6], line_to_check):
                 self.assertEqual(item_loc, item_to_check, 'wrong data in slicing')
 
+    def test_swap_values_one(self):
+        self.data_frame.swap_values('type', {"MID": "@MID@"})
+        types = self.data_frame.get_types_of_data('type')
+        self.assertTrue("@MID@" in types)
 
-
-
-
-
-
-
-
+    def test_swap_values_all(self):
+        self.data_frame.swap_values('type', {"SML": "TINY","MID": "@MID@", "BIG":"HUGE"})
+        types = self.data_frame.get_types_of_data('type')
+        self.assertTrue("@MID@" in types)
+        self.assertTrue("TINY" in types)
+        self.assertTrue("HUGE" in types)
+        self.assertTrue("SML" not in types)
+        self.assertTrue("MID" not in types)
+        self.assertTrue("BIG" not in types)
