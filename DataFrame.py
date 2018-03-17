@@ -89,8 +89,10 @@ class DataFrame(object):
 
     def swap_values(self, column, values_to_swap):
         column = self.get_number_of_column(column)
-        for item in self.data:
-            item[column] = values_to_swap[item[column]]
+        for key in values_to_swap:
+            for item in self.data:
+                if item[column] == key:
+                    item[column] = values_to_swap[item[column]]
 
     def get_values_equal_to(self, column, value):
         column = self.get_number_of_column(column)
