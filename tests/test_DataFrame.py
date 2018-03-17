@@ -1,5 +1,5 @@
 from unittest import TestCase
-from dataframe_testdata import test_data
+from .dataframe_testdata import test_data
 from DataFrame import DataFrame
 
 
