@@ -160,3 +160,10 @@ class TestDataFrame(TestCase):
         self.assertTrue("SML" not in types)
         self.assertTrue("MID" not in types)
         self.assertTrue("BIG" not in types)
+
+    def test_check_if_correct_values_are_teken(self):
+        data = self.data_frame.get_values_equal_to('type', "SML")
+        self.assertEqual(len(data.data), 50)
+        data_sliced = data[-1,:]
+        for item in data_sliced.data:
+            self.assertEqual(item[0], 'SML')

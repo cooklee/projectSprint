@@ -50,7 +50,7 @@ class DataFrame(object):
 
     def __get_column_by_index(self, index):
         label = self.labels[index]
-        data = [x[index] for x in self.data]
+        data = [[x[index]] for x in self.data]
         return DataFrame(labels=label, data=data)
 
     def __get_column_by_slice(self, slice_obj):
