@@ -1,6 +1,7 @@
 from unittest import TestCase
+from copy import copy
 from .dataframe_testdata import test_data
-from DataFrame import DataFrame
+from DataFrame import DataFrame, DataRaw
 
 
 class TestDataFrame(TestCase):
@@ -10,6 +11,12 @@ class TestDataFrame(TestCase):
         self.labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'type']
         self.data = test_data[1:]
         pass
+
+    def test_indexing(self):
+        self.data_frame.reindex()
+        for index, item in enumerate(self.data_frame):
+            self.assertEqual(index, item.index)
+
 
     def test_createDataFrame_labels(self):
         self.assertEqual(len(self.data_frame.labels), len(test_data[0]))
@@ -22,8 +29,9 @@ class TestDataFrame(TestCase):
             self.assertEqual(item_loc, item_to_test)
 
     def test_data_correct(self):
-        for item_loc, item_to_test in zip(test_data[1:], self.data_frame.data):
-            self.assertEqual(item_loc, item_to_test)
+        for line_loc, line_to_test in zip(test_data[1:], self.data_frame.data):
+            for item_loc, item_to_test in zip(line_loc, line_to_test):
+                self.assertEqual(item_loc, item_to_test)
 
     def test_get_types_from_data_frame_by_index_last_column(self):
         types = self.data_frame.get_types_of_data(-1)
@@ -167,3 +175,55 @@ class TestDataFrame(TestCase):
         data_sliced = data[-1,:]
         for item in data_sliced.data:
             self.assertEqual(item[0], 'SML')
+
+    def test_pop_item_int_index_0(self):
+        data_raw = self.data_frame.pop_item(0)
+        expected_values = [0]*10 + ['SML']
+        for exp_item, test_item in zip(expected_values, data_raw):
+            self.assertEqual(exp_item, test_item)
+
+    def test_pop_item_int_index_50(self):
+        data_raw = self.data_frame.pop_item(50)
+        expected_values = [0]*10 + ['MID']
+        for exp_item, test_item in zip(expected_values, data_raw):
+            self.assertEqual(exp_item, test_item)
+
+
+    def test_pop_item_int_index_100(self):
+        data_raw = self.data_frame.pop_item(100)
+        expected_values = [0]*10 + ['BIG']
+        for exp_item, test_item in zip(expected_values, data_raw):
+            self.assertEqual(exp_item, test_item)
+
+    def test_len_of_data_for_poping(self):
+        items_in_frame = len(self.data_frame)
+        for item in range(items_in_frame):
+            self.assertEqual(len(self.data_frame), items_in_frame - (item))
+            self.data_frame.pop_item(item)
+        self.assertEqual(len(self.data_frame), 0)
+
+    def test_copy_dataframe_if_is_correct_instance(self):
+        copied_dataframe = copy(self.data_frame)
+        self.assertTrue(isinstance(copied_dataframe, DataFrame))
+
+    def test_copy_correct_values(self):
+        copied_dataframe = copy(self.data_frame)
+        for rawdata_base, rawdata_copied in zip(self.data_frame, copied_dataframe):
+            for item_base, item_copied in zip(rawdata_base, rawdata_copied):
+                self.assertEquals(item_base, item_copied)
+
+    def test_if_inner_objects_are_diffrent(self):
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,25 +1,28 @@
 from copy import copy
 
+class DataRaw(list):
+    def __init__(self, *args, **kwargs):
+        super(DataRaw, self).__init__(*args, **kwargs)
+        self.index = -1
 
 class DataFrame(object):
 
     def __init__(self, labels=[], data=[], reindex=True):
-        self.data = data
+        self.set_data(data)
         self.labels = labels
+        if reindex:
+            self.reindex()
+
+    def set_data(self, data):
+        self.data = []
+        for item in data:
+            self.data.append(DataRaw(item))
 
     def set_labels(self, data_frame):
         if isinstance(data_frame[0], list):
             self.labels = data_frame[0]
         else:
             self.labels = data_frame
-
-    def set_data_from_csv(self, data_frame):
-        counter = 0
-        for line in data_frame:
-            temp = [counter]
-            temp.extend(line)
-            self.data.append(temp)
-            counter += 1
 
     def convert_data_to_type(self, give_type):
         for line in self.data:
@@ -48,25 +51,30 @@ class DataFrame(object):
             return self.__get_row_by_slice(key)
         return self.__get_row_by_index(key)
 
+    def pop_item(self, index):
+        for index_of_data, item in enumerate(self.data):
+            if item.index == index:
+                return self.data.pop(index_of_data)
+
     def __get_column_by_index(self, index):
         label = self.labels[index]
         data = [[x[index]] for x in self.data]
-        return DataFrame(labels=label, data=data)
+        return DataFrame(labels=label, data=data, reindex=False)
 
     def __get_column_by_slice(self, slice_obj):
         label = self.labels[slice_obj.start: slice_obj.stop]
         data = [x[slice_obj.start: slice_obj.stop: slice_obj.step] for x in self.data]
-        return DataFrame(labels=label, data=data)
+        return DataFrame(labels=label, data=data, reindex=False)
 
     def reindex(self):
         for index, line in enumerate(self.data):
-            line[0] = index
+            line.index = index
 
     def __get_row_by_index(self, index):
-        return DataFrame(labels=self.labels, data=[self.data[index]])
+        return DataFrame(labels=self.labels, data=[self.data[index]], reindex=False)
 
     def __get_row_by_slice(self, slice_obj):
-        return DataFrame(labels=self.labels, data=self.data[slice_obj.start:slice_obj.stop:slice_obj.step])
+        return DataFrame(labels=self.labels, data=self.data[slice_obj.start:slice_obj.stop:slice_obj.step], reindex=False)
 
     def get_number_of_column(self, column_name):
         if type(column_name) is int:
@@ -97,7 +105,7 @@ class DataFrame(object):
     def get_values_equal_to(self, column, value):
         column = self.get_number_of_column(column)
         data = [copy(x) for x in self.data if x[column] == value]
-        return DataFrame(labels=copy(self.labels), data=data)
+        return DataFrame(labels=copy(self.labels), data=data, reindex=False)
 
     def __str__(self):
         ret_str = str(self.labels)+"\n"
@@ -105,9 +113,19 @@ class DataFrame(object):
             ret_str += str(item)+"\n"
         return ret_str
 
+    def __len__(self):
+        return len(self.data)
+
+    def __copy__(self):
+        dataframe = DataFrame(labels=copy(self.labels), data=copy(self.data), reindex=False)
+        return dataframe
+
+
     def __check_if_labels_are_the_same(self, dataframe):
-        for index, label in enumerate(self.labels):
-            if label != dataframe.labels[index]:
+        if len(dataframe.labels) != len(self.labels):
+            return False
+        for label, df_label in zip(self.labels, dataframe.labels):
+            if label != df_label:
                 return False
         return True
 
@@ -117,7 +135,7 @@ class DataFrame(object):
                 data = copy(self.data)
                 labels = copy(self.labels)
                 data.extend(copy(other.data))
-                dataFrame = DataFrame(labels=labels, data=data)
+                dataFrame = DataFrame(labels=labels, data=data, reindex=False)
                 return dataFrame
             else:
                 raise Exception("Lables are diffrent")
