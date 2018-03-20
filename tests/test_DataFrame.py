@@ -209,10 +209,27 @@ class TestDataFrame(TestCase):
     def test_copy_correct_values(self):
         copied_dataframe = copy(self.data_frame)
         for rawdata_base, rawdata_copied in zip(self.data_frame, copied_dataframe):
+            self.assertEquals(rawdata_base.index, rawdata_copied.index)
             for item_base, item_copied in zip(rawdata_base, rawdata_copied):
                 self.assertEquals(item_base, item_copied)
 
-    def test_if_inner_objects_are_diffrent(self):
+    def test_if_inner_objects_are_diffrent_data(self):
+        copied_dataframe = copy(self.data_frame)
+        copied_dataframe.data[0][0] = "Mu point"
+        self.assertEquals(copied_dataframe.data[0].index, self.data_frame.data[0].index)
+        self.assertNotEquals(copied_dataframe.data[0][0], self.data_frame.data[0][0])
+
+    def test_if_inner_objects_are_diffrent_lables(self):
+        copied_dataframe = copy(self.data_frame)
+        copied_dataframe.labels[0] = "Mu point"
+        self.assertNotEquals(copied_dataframe.labels[0], self.data_frame.labels[0])
+
+    def test_check_pop_by_position(self):
+        self.data_frame.pop_on_poss(50)
+        self.assertEqual(self.data_frame.data[50].index, 51)
+
+
+
 
 
 

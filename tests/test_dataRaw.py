@@ -17,7 +17,7 @@ class Test_dataRaw(TestCase):
     def test_if_new_object_is_different_obj(self):
         copied = copy(self.data)
         copied[0] = 'MU'
-        self.assertNotEquals(copied[0], self.sdata[0])
+        self.assertNotEquals(copied[0], self.data[0])
 
     def test_if_index_is_copied(self):
         copied = copy(self.data)

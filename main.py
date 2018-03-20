@@ -1,9 +1,16 @@
 from csv_reader import CsvReader
 from DataScientistMethod import train_split_data
+from model import IrisModel
 
 data = CsvReader.create_from_csv("E:\projekty\Szkolenia\PMI\project-01\data\\raw\iris.csv")
-train_split_data(data, 'iris_type', 0.3)
-a =1
+test_data, to_learn = train_split_data(data, 'iris_type', 0.3)
+
+irisModel = IrisModel(test_data, to_learn, data.get_types_of_data('iris_type'))
+
+irisModel.learn()
+for item in test_data:
+    a = irisModel.predict(item)
+    b =1
 #
 
 

@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 
 class DataRaw(list):
     def __init__(self, *args, **kwargs):
@@ -12,11 +12,15 @@ class DataFrame(object):
         self.labels = labels
         if reindex:
             self.reindex()
+        self.convert_data_to_type(float)
 
     def set_data(self, data):
         self.data = []
         for item in data:
-            self.data.append(DataRaw(item))
+            if isinstance(item, DataRaw):
+                self.data.append(item)
+            else:
+                self.data.append(DataRaw(item))
 
     def set_labels(self, data_frame):
         if isinstance(data_frame[0], list):
@@ -51,9 +55,12 @@ class DataFrame(object):
             return self.__get_row_by_slice(key)
         return self.__get_row_by_index(key)
 
-    def pop_item(self, index):
+    def pop_on_poss(self, pos):
+        return self.data.pop(pos)
+
+    def pop_item(self, rowdata_index):
         for index_of_data, item in enumerate(self.data):
-            if item.index == index:
+            if item.index == rowdata_index:
                 return self.data.pop(index_of_data)
 
     def __get_column_by_index(self, index):
@@ -107,6 +114,13 @@ class DataFrame(object):
         data = [copy(x) for x in self.data if x[column] == value]
         return DataFrame(labels=copy(self.labels), data=data, reindex=False)
 
+    def get_column_as_list(self, column):
+        column = self.get_number_of_column(column)
+        return_list = []
+        for datarow in self.data:
+            return_list.append(datarow[column])
+        return return_list
+
     def __str__(self):
         ret_str = str(self.labels)+"\n"
         for item in self.data:
@@ -117,7 +131,12 @@ class DataFrame(object):
         return len(self.data)
 
     def __copy__(self):
-        dataframe = DataFrame(labels=copy(self.labels), data=copy(self.data), reindex=False)
+        new_list = []
+        for item in self.data:
+            new_list.append(copy(item))
+        dataframe = DataFrame()
+        dataframe.data = new_list
+        dataframe.labels = copy(self.labels)
         return dataframe
 
 
