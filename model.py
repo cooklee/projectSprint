@@ -48,8 +48,12 @@ class IrisModel(object):
                 self.modelInfos[type].append(modelInfo)
 
     def check_if_value_is_in_range(self, value, modelInfo):
-        if  modelInfo.get_upper_boundry(2)> value > modelInfo.get_lower_boundry(2):
+        if  modelInfo.get_upper_boundry(1) > value > modelInfo.get_lower_boundry(1):
             return 1
+        elif modelInfo.get_upper_boundry(2) > value > modelInfo.get_lower_boundry(2):
+            return 0.5
+        elif modelInfo.get_upper_boundry(3) > value > modelInfo.get_lower_boundry(3):
+            return 0.25
         return 0
 
     def check_all_values_aginst_model_info(self, data_row, iris_type):
