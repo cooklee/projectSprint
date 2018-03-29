@@ -32,9 +32,10 @@ class DataFrame(object):
         for line in self.data:
             for index, item in enumerate(line):
                 try:
+                    item.replace(",",".")
                     line[index] = give_type(item)
-                except:
-                    pass
+                except Exception as e:
+                    print (e)
 
     def __iter__(self):
         for item in self.data:

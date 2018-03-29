@@ -30,6 +30,7 @@ def train_split_data(dataframe, column, test_size):
             index_to_test = random.randrange(0, len(to_learn_dataframe[key]))
             temp = to_learn_dataframe[key].pop_on_poss(index_to_test)
             test_datafram.data.append(temp)
+    test_datafram.labels = dataframe.labels
 
     return test_datafram, to_learn_dataframe
 
